@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Global Sales Analytics Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background:#0A0F1C; color:#E2E8F0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; padding:28px 24px; }
+  .mono { font-family:'Courier New',Consolas,monospace; }
+  .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+  .eyebrow { font-size:11px; letter-spacing:.12em; color:#22D3B8; text-transform:uppercase; font-weight:600; margin-bottom:4px; }
+  h1 { font-size:22px; font-weight:600; color:#F8FAFC; }
+  .subdate { font-size:12px; color:#64748B; margin-top:4px; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; }
+  .chip { padding:6px 14px; border-radius:6px; font-size:12px; font-weight:500; border:1px solid #1F2937; color:#94A3B8; cursor:pointer; background:transparent; }
+  .chip.active { border-color:#22D3B8; background:rgba(34,211,184,0.1); color:#22D3B8; }
+  select { background:#111827; color:#E2E8F0; border:1px solid #1F2937; border-radius:6px; padding:6px 12px; font-size:12px; }
+  .kpi-row { display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
+  .kpi-card { background:#111827; border:1px solid #1F2937; border-radius:10px; padding:18px 20px; flex:1; min-width:150px; }
+  .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#8B98B5; }
+  .kpi-value { font-size:26px; font-weight:600; color:#F1F5F9; margin-top:8px; }
+  .kpi-sub { font-size:12px; color:#8B98B5; margin-top:6px; }
+  .kpi-sub.up { color:#22D3B8; }
+  .grid2 { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; }
+  .grid2b { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .card { background:#111827; border:1px solid #1F2937; border-radius:10px; padding:18px 20px; }
+  .card-title { font-size:13px; font-weight:600; color:#F1F5F9; margin-bottom:4px; }
+  .card-sub { font-size:11px; color:#64748B; margin-bottom:12px; }
+  .legend-row { display:flex; justify-content:space-between; font-size:11px; color:#94A3B8; padding:3px 0; }
+  .dot { width:8px; height:8px; border-radius:2px; display:inline-block; margin-right:6px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { color:#64748B; text-align:left; font-weight:500; padding-bottom:8px; border-bottom:1px solid #1F2937; }
+  td { padding:10px 0; border-bottom:1px solid #1A2333; }
+  .channel-row { display:flex; gap:12px; }
+  .channel-item { flex:1; }
+  .bar-bg { height:8px; background:#1A2333; border-radius:4px; overflow:hidden; margin:6px 0; }
+  .bar-fill { height:100%; border-radius:4px; }
+  .footer { text-align:center; font-size:11px; color:#3D4A63; margin-top:20px; }
+  .region-bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .region-name { width:110px; font-size:12px; color:#94A3B8; flex-shrink:0; }
+  .region-bar-track { flex:1; background:#1A2333; border-radius:4px; height:20px; position:relative; }
+  .region-bar-value { height:100%; border-radius:4px; background:#22D3B8; }
+  .region-val-label { font-size:11px; color:#F1F5F9; margin-left:8px; white-space:nowrap; }
+  .tooltip { position:absolute; background:#0A0F1C; border:1px solid #1F2937; border-radius:6px; padding:6px 10px; font-size:11px; color:#F1F5F9; pointer-events:none; opacity:0; transition:opacity .1s; z-index:10; white-space:nowrap; }
+  @media (max-width:900px){ .grid2, .grid2b { grid-template-columns:1fr; } .channel-row { flex-direction:column; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="eyebrow">Global Sales Analytics</div>
+    <h1>Revenue Performance Dashboard</h1>
+    <div class="subdate">FY2024 – FY2025 · Updated Dec 31, 2025</div>
+  </div>
+  <div class="controls">
+    <div class="chip active" data-year="All">All</div>
+    <div class="chip" data-year="2024">2024</div>
+    <div class="chip" data-year="2025">2025</div>
+    <select id="regionSelect">
+      <option value="All">All Regions</option>
+      <option value="North America">North America</option>
+      <option value="Europe">Europe</option>
+      <option value="APAC">APAC</option>
+      <option value="LATAM">LATAM</option>
+    </select>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value mono">$17.29M</div><div class="kpi-sub up">▲ +19.2% YoY</div></div>
+  <div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-value mono">60,000</div><div class="kpi-sub">60,000 transactions</div></div>
+  <div class="kpi-card"><div class="kpi-label">Avg Order Value</div><div class="kpi-value mono">$288.18</div><div class="kpi-sub">Across all channels</div></div>
+  <div class="kpi-card"><div class="kpi-label">Unique Customers</div><div class="kpi-value mono">28.8K</div><div class="kpi-sub">28,784 total</div></div>
+</div>
+
+<div class="grid2">
+  <div class="card" style="position:relative;">
+    <div class="card-title">Revenue Trend</div>
+    <div class="card-sub" id="trendSub">All regions · Monthly, 2024–2025</div>
+    <svg id="trendChart" width="100%" height="220" viewBox="0 0 760 220" preserveAspectRatio="none"></svg>
+    <div class="tooltip" id="trendTooltip"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Revenue by Category</div>
+    <div class="card-sub">Share of total, FY24–25</div>
+    <svg id="catChart" width="100%" height="160" viewBox="0 0 160 160"></svg>
+    <div id="catLegend"></div>
+  </div>
+</div>
+
+<div class="grid2b">
+  <div class="card">
+    <div class="card-title">Revenue by Region</div>
+    <div class="card-sub">North America leads at 42% of total revenue</div>
+    <div id="regionBars"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Customer Segment Performance</div>
+    <div class="card-sub">Returning customers drive 49% of revenue</div>
+    <table>
+      <thead><tr><th>Segment</th><th style="text-align:right">Customers</th><th style="text-align:right">Orders</th><th style="text-align:right">Revenue</th><th style="text-align:right">AOV</th></tr></thead>
+      <tbody id="segBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Channel Mix</div>
+  <div class="card-sub">Online remains the dominant channel at 55% of orders</div>
+  <div class="channel-row" id="channelRow"></div>
+</div>
+
+<div class="footer">Data reflects simulated transaction-level sales data, Jan 2024 – Dec 2025 · No internet connection required — all charts are hand-drawn SVG</div>
+
+<script>
+const DATA = {
+  kpis: { total_revenue: 17290889, total_orders: 60000, aov: 288.18, total_customers: 28784, yoy_growth: 19.2 },
+  category: [
+    {"category":"Electronics","revenue":10497685},
+    {"category":"Home & Garden","revenue":2394299},
+    {"category":"Apparel","revenue":2100652},
+    {"category":"Sports","revenue":1339264},
+    {"category":"Beauty","revenue":958989}
+  ],
+  region: [
+    {"region":"North America","revenue":7326572},
+    {"region":"Europe","revenue":4813153},
+    {"region":"APAC","revenue":3719243},
+    {"region":"LATAM","revenue":1431920}
+  ],
+  channel: [
+    {"channel":"Online","revenue":9476135,"orders":32858},
+    {"channel":"Retail Store","revenue":4378643,"orders":15139},
+    {"channel":"Marketplace","revenue":3436110,"orders":12003}
+  ],
+  segment: [
+    {"segment":"New","revenue":5261462,"orders":21103,"customers":15868},
+    {"segment":"Returning","revenue":8483236,"orders":29960,"customers":20192},
+    {"segment":"VIP","revenue":3546191,"orders":8937,"customers":7929}
+  ],
+  region_monthly: [
+    {"month":"2024-01","APAC":94392,"Europe":122090,"LATAM":37276,"North America":204635},
+    {"month":"2024-02","APAC":111318,"Europe":130887,"LATAM":34315,"North America":194445},
+    {"month":"2024-03","APAC":126130,"Europe":156780,"LATAM":55432,"North America":242900},
+    {"month":"2024-04","APAC":140918,"Europe":184436,"LATAM":50020,"North America":276222},
+    {"month":"2024-05","APAC":169868,"Europe":201948,"LATAM":63314,"North America":286237},
+    {"month":"2024-06","APAC":147665,"Europe":217585,"LATAM":59515,"North America":317512},
+    {"month":"2024-07","APAC":152898,"Europe":207436,"LATAM":72176,"North America":323031},
+    {"month":"2024-08","APAC":167028,"Europe":194079,"LATAM":63930,"North America":291486},
+    {"month":"2024-09","APAC":144507,"Europe":174025,"LATAM":60036,"North America":268692},
+    {"month":"2024-10","APAC":127116,"Europe":155673,"LATAM":42900,"North America":243729},
+    {"month":"2024-11","APAC":145831,"Europe":208969,"LATAM":47835,"North America":332546},
+    {"month":"2024-12","APAC":181148,"Europe":217557,"LATAM":70429,"North America":368700},
+    {"month":"2025-01","APAC":120395,"Europe":166855,"LATAM":46649,"North America":241273},
+    {"month":"2025-02","APAC":120119,"Europe":145867,"LATAM":49889,"North America":230334},
+    {"month":"2025-03","APAC":164174,"Europe":189722,"LATAM":53745,"North America":321894},
+    {"month":"2025-04","APAC":154264,"Europe":217687,"LATAM":76888,"North America":325895},
+    {"month":"2025-05","APAC":197153,"Europe":255569,"LATAM":73047,"North America":366633},
+    {"month":"2025-06","APAC":174780,"Europe":246445,"LATAM":80073,"North America":348379},
+    {"month":"2025-07","APAC":196579,"Europe":262172,"LATAM":69750,"North America":411684},
+    {"month":"2025-08","APAC":177887,"Europe":222519,"LATAM":74081,"North America":340305},
+    {"month":"2025-09","APAC":163823,"Europe":187299,"LATAM":51189,"North America":321620},
+    {"month":"2025-10","APAC":154899,"Europe":178750,"LATAM":52512,"North America":276100},
+    {"month":"2025-11","APAC":176229,"Europe":246935,"LATAM":67863,"North America":379739},
+    {"month":"2025-12","APAC":210123,"Europe":321866,"LATAM":79056,"North America":412584}
+  ]
+};
+
+const ACCENT = "#22D3B8", AMBER = "#F5A623", VIOLET = "#8B7FF0", CORAL = "#F0665A", SLATE = "#5B6B8C";
+const PALETTE = [ACCENT, AMBER, VIOLET, CORAL, SLATE];
+const fmtFull = v => "$" + Math.round(v).toLocaleString();
+const fmtM = v => "$" + (v/1e6).toFixed(2) + "M";
+const monthLabel = m => { const [y,mo]=m.split("-"); return new Date(y,mo-1).toLocaleString("en",{month:"short"})+" '"+y.slice(2); };
+const svgns = "http://www.w3.org/2000/svg";
+const el = (tag, attrs) => { const e = document.createElementNS(svgns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+// ---------- Trend chart (SVG line/area) ----------
+const trendSvg = document.getElementById('trendChart');
+const trendTooltip = document.getElementById('trendTooltip');
+const VW = 760, VH = 220, PAD_L = 55, PAD_B = 28, PAD_T = 10, PAD_R = 10;
+
+function drawTrend(data) {
+  trendSvg.innerHTML = '';
+  const values = data.map(d => d.value);
+  const maxV = Math.max(...values) * 1.1;
+  const minV = 0;
+  const plotW = VW - PAD_L - PAD_R;
+  const plotH = VH - PAD_T - PAD_B;
+  const xFor = i => PAD_L + (i/(data.length-1)) * plotW;
+  const yFor = v => PAD_T + plotH - ((v-minV)/(maxV-minV)) * plotH;
+
+  for (let g = 0; g <= 4; g++) {
+    const v = minV + (maxV-minV) * g/4;
+    const y = yFor(v);
+    trendSvg.appendChild(el('line', {x1:PAD_L, y1:y, x2:VW-PAD_R, y2:y, stroke:'#1F2937', 'stroke-width':1}));
+    const label = document.createElementNS(svgns,'text');
+    label.setAttribute('x', PAD_L-8); label.setAttribute('y', y+3);
+    label.setAttribute('text-anchor','end'); label.setAttribute('font-size','9'); label.setAttribute('fill','#64748B');
+    label.textContent = '$' + Math.round(v/1000) + 'K';
+    trendSvg.appendChild(label);
+  }
+
+  const step = data.length > 12 ? 2 : 1;
+  data.forEach((d,i) => {
+    if (i % step !== 0) return;
+    const label = document.createElementNS(svgns,'text');
+    label.setAttribute('x', xFor(i)); label.setAttribute('y', VH-8);
+    label.setAttribute('text-anchor','middle'); label.setAttribute('font-size','9'); label.setAttribute('fill','#64748B');
+    label.textContent = monthLabel(d.month);
+    trendSvg.appendChild(label);
+  });
+
+  let pathD = `M ${xFor(0)} ${yFor(values[0])}`;
+  for (let i=1;i<data.length;i++) pathD += ` L ${xFor(i)} ${yFor(values[i])}`;
+  const areaD = pathD + ` L ${xFor(data.length-1)} ${yFor(0)} L ${xFor(0)} ${yFor(0)} Z`;
+
+  const grad = el('linearGradient', {id:'areaGrad', x1:0, y1:0, x2:0, y2:1});
+  grad.appendChild(el('stop', {offset:'0%', 'stop-color':ACCENT, 'stop-opacity':0.35}));
+  grad.appendChild(el('stop', {offset:'100%', 'stop-color':ACCENT, 'stop-opacity':0}));
+  const defs = el('defs', {}); defs.appendChild(grad); trendSvg.appendChild(defs);
+
+  trendSvg.appendChild(el('path', {d:areaD, fill:'url(#areaGrad)'}));
+  trendSvg.appendChild(el('path', {d:pathD, fill:'none', stroke:ACCENT, 'stroke-width':2}));
+
+  data.forEach((d,i) => {
+    const cx = xFor(i), cy = yFor(values[i]);
+    const dot = el('circle', {cx, cy, r:3, fill:ACCENT, opacity:0});
+    const hit = el('circle', {cx, cy, r:10, fill:'transparent', style:'cursor:pointer'});
+    hit.addEventListener('mouseenter', () => {
+      dot.setAttribute('opacity', 1);
+      trendTooltip.style.opacity = 1;
+      trendTooltip.textContent = monthLabel(d.month) + ': ' + fmtFull(values[i]);
+      const rect = trendSvg.getBoundingClientRect();
+      const scaleX = rect.width / VW;
+      trendTooltip.style.left = (cx*scaleX - 40) + 'px';
+      trendTooltip.style.top = (cy - 36) + 'px';
+    });
+    hit.addEventListener('mouseleave', () => { dot.setAttribute('opacity', 0); trendTooltip.style.opacity = 0; });
+    trendSvg.appendChild(dot);
+    trendSvg.appendChild(hit);
+  });
+}
+
+function updateTrend() {
+  const year = document.querySelector('.chip.active').dataset.year;
+  const region = document.getElementById('regionSelect').value;
+  let data = DATA.region_monthly;
+  if (year !== "All") data = data.filter(d => d.month.startsWith(year));
+  const mapped = data.map(d => ({ month: d.month, value: region === "All" ? d["North America"]+d["Europe"]+d["APAC"]+d["LATAM"] : d[region] }));
+  drawTrend(mapped);
+  document.getElementById('trendSub').textContent = (region==="All"?"All regions":region) + " · Monthly, " + (year==="All"?"2024–2025":year);
+}
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    updateTrend();
+  });
+});
+document.getElementById('regionSelect').addEventListener('change', updateTrend);
+updateTrend();
+
+// ---------- Category donut (SVG arcs) ----------
+const catSvg = document.getElementById('catChart');
+const totalCat = DATA.category.reduce((a,c)=>a+c.revenue,0);
+const cx = 80, cy = 80, rOuter = 70, rInner = 42;
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const a = (angleDeg-90) * Math.PI/180;
+  return { x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+}
+function arcPath(cx, cy, rOuter, rInner, startAngle, endAngle) {
+  const p1 = polarToCartesian(cx, cy, rOuter, endAngle);
+  const p2 = polarToCartesian(cx, cy, rOuter, startAngle);
+  const p3 = polarToCartesian(cx, cy, rInner, startAngle);
+  const p4 = polarToCartesian(cx, cy, rInner, endAngle);
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+  return `M ${p1.x} ${p1.y} A ${rOuter} ${rOuter} 0 ${largeArc} 0 ${p2.x} ${p2.y} L ${p3.x} ${p3.y} A ${rInner} ${rInner} 0 ${largeArc} 1 ${p4.x} ${p4.y} Z`;
+}
+let angleStart = 0;
+DATA.category.forEach((c,i) => {
+  const sweep = (c.revenue/totalCat) * 360;
+  const path = el('path', { d: arcPath(cx,cy,rOuter,rInner, angleStart, angleStart+sweep), fill: PALETTE[i%PALETTE.length], stroke:'#111827', 'stroke-width':2 });
+  const title = document.createElementNS(svgns,'title');
+  title.textContent = c.category + ': ' + fmtFull(c.revenue);
+  path.appendChild(title);
+  catSvg.appendChild(path);
+  angleStart += sweep;
+});
+const catLegend = document.getElementById('catLegend');
+DATA.category.forEach((c,i) => {
+  const row = document.createElement('div');
+  row.className = 'legend-row';
+  row.innerHTML = `<span><span class="dot" style="background:${PALETTE[i]}"></span>${c.category}</span><span class="mono">${(c.revenue/totalCat*100).toFixed(1)}%</span>`;
+  catLegend.appendChild(row);
+});
+
+// ---------- Region bars (plain HTML/CSS) ----------
+const regionBars = document.getElementById('regionBars');
+const maxRegionRev = Math.max(...DATA.region.map(r=>r.revenue));
+DATA.region.forEach((r,i) => {
+  const pct = (r.revenue/maxRegionRev*100);
+  const row = document.createElement('div');
+  row.className = 'region-bar-row';
+  row.innerHTML = `
+    <div class="region-name">${r.region}</div>
+    <div class="region-bar-track"><div class="region-bar-value" style="width:${pct}%;background:${PALETTE[i]}"></div></div>
+    <div class="region-val-label mono">${fmtM(r.revenue)}</div>
+  `;
+  regionBars.appendChild(row);
+});
+
+// ---------- Segment table ----------
+const segBody = document.getElementById('segBody');
+DATA.segment.forEach((s,i) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><span class="dot" style="background:${PALETTE[i]}"></span>${s.segment}</td>
+    <td style="text-align:right" class="mono">${s.customers.toLocaleString()}</td>
+    <td style="text-align:right" class="mono">${s.orders.toLocaleString()}</td>
+    <td style="text-align:right" class="mono">${fmtM(s.revenue)}</td>
+    <td style="text-align:right" class="mono">$${Math.round(s.revenue/s.orders)}</td>`;
+  segBody.appendChild(tr);
+});
+
+// ---------- Channel mix ----------
+const channelRow = document.getElementById('channelRow');
+const totalRev = DATA.kpis.total_revenue;
+DATA.channel.forEach((c,i) => {
+  const pct = (c.revenue/totalRev*100).toFixed(1);
+  const div = document.createElement('div');
+  div.className = 'channel-item';
+  div.innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:12px;">
+      <span style="font-weight:500;color:#E2E8F0;">${c.channel}</span>
+      <span class="mono" style="color:#64748B;">${pct}%</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${PALETTE[i]}"></div></div>
+    <div style="font-size:11px;color:#64748B;" class="mono">${fmtM(c.revenue)} · ${c.orders.toLocaleString()} orders</div>
+  `;
+  channelRow.appendChild(div);
+});
+</script>
+</body>
+</html>
